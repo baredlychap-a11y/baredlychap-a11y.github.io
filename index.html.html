@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>เกมเติมคำ ระบบย่อยอาหาร</title>
+
+<style>
+body{
+  font-family: Tahoma, sans-serif;
+  background:#eef5ff;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  min-height:100vh;
+  margin:0;
+}
+.game{
+  background:white;
+  width:min(95vw,520px);
+  padding:20px;
+  border-radius:16px;
+  box-shadow:0 8px 20px rgba(0,0,0,.15);
+}
+h1{ margin-top:0; }
+.img-box{
+  background:#f7f9ff;
+  border-radius:12px;
+  padding:10px;
+  margin-bottom:15px;
+}
+img{
+  width:100%;
+  height:220px;
+  object-fit:contain;
+}
+.sentence{
+  font-size:18px;
+  margin:10px 0 15px;
+}
+.blank{
+  border-bottom:2px solid #333;
+  padding:0 8px;
+  font-weight:bold;
+}
+.words{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+.words button{
+  padding:10px;
+  font-size:16px;
+  border:none;
+  border-radius:10px;
+  background:#e3ecff;
+  cursor:pointer;
+}
+.words button:hover{ background:#bcd3ff; }
+.feedback{
+  margin-top:12px;
+  font-weight:bold;
+  min-height:24px;
+}
+.score{
+  margin-top:8px;
+  font-weight:bold;
+}
+</style>
+</head>
+
+<body>
+<div class="game">
+  <h1>เติมคำให้ถูกต้อง</h1>
+
+  <div class="img-box">
+    <!-- 🔽 ช่องว่างรูป (ใช้รูปจากเครื่องคุณ) -->
+    <img id="qImage" src="">
+  </div>
+
+  <div class="sentence" id="sentence"></div>
+
+  <div class="words" id="choices"></div>
+
+  <div class="feedback" id="feedback"></div>
+  <div class="score" id="score">คะแนน: 0</div>
+</div>
+
+<script>
+const questions = [
+ {
+  text:"อวัยวะที่ยื่นออกมาจากลำไส้ใหญ่ เรียกว่า ________",
+  answer:"ไส้ติ่ง",
+  img:"appendix.png"
+ },
+ {
+  text:"อวัยวะที่ลำเลียงอาหารจากปากไปยังกระเพาะอาหาร คือ ________",
+  answer:"หลอดอาหาร",
+  img:"esophagus.png"
+ },
+ {
+  text:"อวัยวะที่ใช้ย่อยอาหารเบื้องต้น เรียกว่า ________",
+  answer:"กระเพาะอาหาร",
+  img:"stomach.png"
+ },
+ {
+  text:"อวัยวะที่ย่อยและดูดซึมอาหารส่วนใหญ่ คือ ________",
+  answer:"ลำไส้เล็ก",
+  img:"small_intestine.png"
+ },
+ {
+  text:"ลำไส้เล็กส่วนกลาง เรียกว่า ________",
+  answer:"เจจูนัม",
+  img:"jejunum.png"
+ },
+ {
+  text:"ลำไส้เล็กส่วนปลาย เรียกว่า ________",
+  answer:"ไอเลียม",
+  img:"ileum.png"
+ },
+ {
+  text:"อวัยวะที่ดูดซึมน้ำและเกลือแร่ คือ ________",
+  answer:"ลำไส้ใหญ่",
+  img:"large_intestine.png"
+ },
+ {
+  text:"อวัยวะที่สร้างเอนไซม์ย่อยอาหาร เรียกว่า ________",
+  answer:"ตับอ่อน",
+  img:"pancreas.png"
+ },
+ {
+  text:"ของเหลวที่ช่วยย่อยไขมัน เรียกว่า ________",
+  answer:"น้ำดี",
+  img:"bile.png"
+ },
+ {
+  text:"ส่วนสุดท้ายของระบบย่อยอาหาร คือ ________",
+  answer:"ทวารหนัก",
+  img:"anus.png"
+ }
+];
+
+let score = 0;
+let index = 0;
+
+function loadQuestion(){
+  const q = questions[index];
+  document.getElementById("qImage").src = q.img;
+  document.getElementById("sentence").innerHTML =
+    q.text.replace("________", `<span class="blank">______</span>`);
+
+  const choices = [...questions.map(q=>q.answer)]
+    .sort(()=>Math.random()-0.5)
+    .slice(0,4);
+
+  if(!choices.includes(q.answer)){
+    choices[Math.floor(Math.random()*4)] = q.answer;
+  }
+
+  const box = document.getElementById("choices");
+  box.innerHTML = "";
+  document.getElementById("feedback").textContent = "";
+
+  choices.forEach(word=>{
+    const btn = document.createElement("button");
+    btn.textContent = word;
+    btn.onclick = ()=>check(word);
+    box.appendChild(btn);
+  });
+}
+
+function check(word){
+  const correct = questions[index].answer;
+  if(word === correct){
+    score++;
+    document.getElementById("feedback").textContent = "✅ ถูกต้อง";
+  }else{
+    document.getElementById("feedback").textContent = "❌ ผิด คำตอบคือ " + correct;
+  }
+  document.getElementById("score").textContent = "คะแนน: " + score;
+
+  index++;
+  if(index < questions.length){
+    setTimeout(loadQuestion, 800);
+  }else{
+    document.getElementById("sentence").textContent = "🎉 จบเกมแล้ว!";
+    document.getElementById("choices").innerHTML = "";
+  }
+}
+
+loadQuestion();
+</script>
+</body>
+</html>
